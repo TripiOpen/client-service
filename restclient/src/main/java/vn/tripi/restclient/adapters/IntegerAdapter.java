@@ -6,13 +6,9 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
-/**
- * Created by lion on 23/09/2017.
- */
-
-public class BooleanAdapter extends TypeAdapter<Boolean> {
+public class IntegerAdapter extends TypeAdapter<Integer> {
     @Override
-    public void write(JsonWriter out, Boolean value) throws IOException {
+    public void write(JsonWriter out, Integer value) throws IOException {
         if (value == null) {
             out.nullValue();
             return;
@@ -21,22 +17,25 @@ public class BooleanAdapter extends TypeAdapter<Boolean> {
     }
 
     @Override
-    public Boolean read(JsonReader in) throws IOException {
+    public Integer read(JsonReader in) throws IOException {
         JsonToken peek = in.peek();
         switch (peek) {
             case NULL:
                 in.nextNull();
                 return null;
 
-            case BOOLEAN:
-                return in.nextBoolean();
-
             case NUMBER:
-                return in.nextInt() != 0;
+                return in.nextInt();
+
+            case BOOLEAN:
+                return in.nextBoolean() ? 1 : 0;
 
             case STRING:
-                return Boolean.valueOf(in.nextString());
-
+                try {
+                    return Integer.valueOf(in.nextString());
+                } catch (NumberFormatException e) {
+                    return null;
+                }
             default:
                 return null;
         }
